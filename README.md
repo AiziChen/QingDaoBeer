@@ -24,7 +24,7 @@ https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex
 
 ## 二、打包并运行
 * 下载该项目源文件，并解压到某个目录下。
-* 下载Tesseract.dll运行时包，可在https://sourceforge.net/projects/tess4j/下载。下载完成后，解压并进入dist/目录，然后解压tess4j-x.x.x.jar。把里面的win32-x86中的libtesseractNNN.dll提取出来放到源文件目录下。
+* 下载Tesseract.dll运行时包，可在https://sourceforge.net/projects/tess4j/ 下载。下载完成后，解压并进入dist/目录，然后解压tess4j-x.x.x.jar。把里面的win32-x86中的libtesseractNNN.dll提取出来放到源文件目录下。
 * 安装mysql数据库。可在此处下载：https://dev.mysql.com/downloads/mysql/
 * 配置mysql，并记下登录的用户名和密码。然后进行mysql登录，在mysql中创建一个名为`QingDaoBeer`的表。
 * 更改src/resources目录下的application.properties文件中的用户名和密码。
