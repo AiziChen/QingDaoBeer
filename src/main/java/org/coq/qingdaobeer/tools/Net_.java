@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -20,19 +19,35 @@ import java.util.Map;
 
 /**
  * Network Tool
+ *
+ * @Quanyec
  */
 public class Net_ {
     private static final String USER_ID = "63E014187E0DAE7818EE2AAB125B4269";
-    private static CloseableHttpClient client;
+    private static CloseableHttpClient client = HttpClientBuilder.create().build();
 
     /**
-     * Start Snatch
+     * Get the HttpClient
+     *
+     * @return
+     */
+    public static CloseableHttpClient getHttpClient() {
+        if (client == null) {
+            client = HttpClientBuilder.create().build();
+            return client;
+        } else {
+            return client;
+        }
+    }
+
+    /**
+     * Start Draw
      *
      * @param phone
      * @param code
      * @return
      */
-    public static String startSnatch(String phone, String code) {
+    public static String startDraw(String phone, String code) {
         String url = "https://m.client.10010.com/sma-lottery/qpactivity/qpLuckdraw.htm";
         HttpPost poster = new HttpPost(url);
         poster.addHeader("Referer", "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex");
@@ -45,13 +60,12 @@ public class Net_ {
             UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(getParam(values), "UTF-8");
             poster.setEntity(encodedFormEntity);
             // do request
-            HttpResponse resp = client.execute(poster);
+            HttpResponse resp = getHttpClient().execute(poster);
             if (resp.getStatusLine().getStatusCode() == 200) {
-                String responseText = EntityUtils.toString(resp.getEntity());
-                return responseText;
+                String respText = EntityUtils.toString(resp.getEntity());
+                return respText;
             }
-        } catch (IOException e) {
-//            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         return null;
     }
@@ -71,27 +85,22 @@ public class Net_ {
     /**
      * Connect to link to get the image-code
      *
-     * @param phone
      * @return `null` if get failed, or the `code` if get success
      */
-    public static String getImageCode(String phone) {
-        client = HttpClientBuilder.create().build();
+    public static String getImageCode() {
         String url = "https://m.client.10010.com/sma-lottery/qpactivity/getSysManageLoginCode.htm";
         url = url + "?userid=" + USER_ID + "&code=" + System.currentTimeMillis();
-        HttpGet getter = new HttpGet(url);
-        getter.addHeader("Referer", "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex");
-        getter.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
-        try {
-            HttpResponse response = client.execute(getter);
-            if (response.getStatusLine().getStatusCode() == 200) {
-                byte[] bytes = EntityUtils.toByteArray(response.getEntity());
-                C_.downloadImage(bytes, phone + ".png");
-                return C_.getImgContent(phone + ".png");
+        String code = C_.getImgContent(url);
+        for (int i = 0; i < 10 && code == null; i++) {
+            try {
+                // Sleep 1 second
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-//            e.printStackTrace();
+            code = Net_.getImageCode();
         }
-        return null;
+        return code;
     }
 
 
@@ -115,7 +124,7 @@ public class Net_ {
             UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(getParam(values), "UTF-8");
             poster.setEntity(encodedFormEntity);
             // do request
-            HttpResponse resp = client.execute(poster);
+            HttpResponse resp = getHttpClient().execute(poster);
             if (resp.getStatusLine().getStatusCode() == 200) {
                 String responseText = EntityUtils.toString(resp.getEntity());
                 JSONObject resJson = JSON.parseObject(responseText);
@@ -125,8 +134,7 @@ public class Net_ {
                     return null;
                 }
             }
-        } catch (IOException e) {
-//            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         return null;
     }
