@@ -20,8 +20,8 @@ public class QingDaoBeerApplication {
     public static void main(String[] args) {
         SpringApplication.run(QingDaoBeerApplication.class, args);
 //         立即开启线程可实时测试
-        Thread snatchThread = new Thread(new DrawRunable());
-        snatchThread.start();
+//        Thread snatchThread = new Thread(new DrawRunable());
+//        snatchThread.start();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         new Timer().schedule(new TimerTask() {
             @Override
