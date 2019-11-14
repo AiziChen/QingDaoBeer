@@ -91,6 +91,7 @@ public class DrawRunable implements Runnable {
             JSONObject resJson = JSON.parseObject(result);
             int status = resJson.getInteger("status");
             switch (status) {
+                case 000:
                 case 200:
                     System.out.println(phone + ", 成功抽奖。");
                     break;
