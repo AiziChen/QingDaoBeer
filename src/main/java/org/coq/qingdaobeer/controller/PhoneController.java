@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @RestController
@@ -20,9 +21,13 @@ public class PhoneController {
     }
 
     @PostMapping("/pushPhone")
-    public Msg pushNewPhone(@RequestParam String phone) {
+    public Msg pushNewPhone(@RequestParam String phone, @RequestParam String code, HttpServletRequest request) {
         if (phone.length() != 11) {
             return new Msg(-1, "输入的手机号不正确。");
+        }
+        String host = request.getRemoteHost();
+        if (!IndexPageController.codes.get(host).equals(code)) {
+            return new Msg(-1, "验证码不正确");
         }
         try {
             phoneRepo.save(new Phone(phone, new Date()));

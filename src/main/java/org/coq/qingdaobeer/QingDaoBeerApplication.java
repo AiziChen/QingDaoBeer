@@ -22,7 +22,7 @@ public class QingDaoBeerApplication {
 //         立即开启线程可实时测试
 //        Thread snatchThread = new Thread(new DrawRunable());
 //        snatchThread.start();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {

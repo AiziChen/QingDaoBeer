@@ -13,6 +13,11 @@
 <h2>青岛流量自动挂机系统</h2>
 <form action="/phone/pushPhone" method="post">
     手机号：<input type="text" id="phone" name="phone">
+    <br>
+    验证码：<input type="text" id="verify_code" name="verify_code">
+    <br>
+    <img src="/getVerify" alt="verify_code_image" id="verify_code_image">
+    <br>
     <input type="submit" value="添加自动挂机" id="btn_add">
 </form>
 <script src="${root}/lib/axios.min.js"></script>

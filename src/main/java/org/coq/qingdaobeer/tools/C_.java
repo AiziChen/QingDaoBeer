@@ -6,8 +6,13 @@ import net.sourceforge.tess4j.TesseractException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Common tools
@@ -84,4 +89,5 @@ public class C_ {
         }
         return null;
     }
+
 }
