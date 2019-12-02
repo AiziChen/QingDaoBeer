@@ -26,7 +26,8 @@ public class PhoneController {
             return new Msg(-1, "输入的手机号不正确。");
         }
         String host = request.getRemoteHost();
-        if (!IndexPageController.codes.get(host).equals(code)) {
+        if (!IndexPageController.codes.get(host).toLowerCase()
+                .equals(code.toLowerCase())) {
             return new Msg(-1, "验证码不正确");
         }
         try {
