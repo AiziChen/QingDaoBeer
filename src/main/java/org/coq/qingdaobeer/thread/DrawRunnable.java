@@ -19,18 +19,18 @@ import javax.annotation.PostConstruct;
  * @author Quanyec
  */
 @Component
-public class DrawRunable implements Runnable {
+public class DrawRunnable implements Runnable {
     private static final long SEPARATE_TIME = 2 * 1000;
     private static final int TIMES = 3;
     private static final int PAGE_SIZE = 10;
 
     @Autowired
     private PhoneRepository phoneRepo;
-    public static DrawRunable clazz;
+    public static DrawRunnable clazz;
 
     @PostConstruct
     public void init() {
-        DrawRunable.clazz = this;
+        DrawRunnable.clazz = this;
         clazz.phoneRepo = this.phoneRepo;
     }
 
@@ -93,7 +93,7 @@ public class DrawRunable implements Runnable {
             switch (status) {
                 case 000:
                 case 200:
-                    System.out.println(phone + ", 成功抽奖。");
+                    System.out.println(", 成功抽奖。");
                     break;
                 case 500:
                     System.err.println("没抽奖次数了哦，改日再战吧!");

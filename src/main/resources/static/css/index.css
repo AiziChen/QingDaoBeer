@@ -1,4 +1,39 @@
+/**
+ * global
+ */
 body {
-    text-align: center;
     background-color: antiquewhite;
+}
+/**
+ * main content
+ */
+div#content-main {
+    text-align: center;
+}
+img#verify-code-image {
+    padding-left: 3em;
+}
+/**
+ * system information
+ */
+p#sys-info {
+    text-align: center;
+}
+p#sys-info>a {
+    text-decoration: none;
+    color: dodgerblue;
+}
+
+form input {
+    border: 2px solid goldenrod;
+    border-radius: 4px;
+    padding: 2px;
+}
+form input#btn-add {
+    background-color: #efef00;
+    padding: 4px 10px;
+}
+form input#btn-add:active {
+    font-weight: bold;
+    background-color: #ffff00;
 }
