@@ -2,21 +2,14 @@ package org.coq.qingdaobeer.tools;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import okhttp3.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Network Tool
@@ -24,17 +17,18 @@ import java.util.Map;
  * @Quanyec
  */
 public class Net_ {
-    private static final String USER_ID = "63E014187E0DAE7818EE2AAB125B4269";
-    private static CloseableHttpClient client = HttpClientBuilder.create().build();
+    private static String USER_ID = "2A467CFE305D1CF6DF3A9B6202023EFF";
+    private static OkHttpClient client = new OkHttpClient();
+    private static HttpUrl httpUrl;
 
     /**
      * Get the HttpClient
      *
      * @return
      */
-    public static CloseableHttpClient getHttpClient() {
+    public static OkHttpClient getHttpClient() {
         if (client == null) {
-            client = HttpClientBuilder.create().build();
+            client = new OkHttpClient();
             return client;
         } else {
             return client;
@@ -48,38 +42,83 @@ public class Net_ {
      * @param code
      * @return
      */
-    public static String startDraw(String phone, String code) {
+    public static String startDraw(String phone, String code) throws IOException {
         String url = "https://m.client.10010.com/sma-lottery/qpactivity/qpLuckdraw.htm";
-        HttpPost poster = new HttpPost(url);
-        poster.addHeader("Referer", "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex");
-        poster.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
-        Map<String, String> values = new HashMap<>();
-        values.put("mobile", phone);
-        values.put("image", code);
-        values.put("userid", USER_ID);
-        try {
-            UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(getParam(values), "UTF-8");
-            poster.setEntity(encodedFormEntity);
-            // do request
-            HttpResponse resp = getHttpClient().execute(poster);
-            if (resp.getStatusLine().getStatusCode() == 200) {
-                String respText = EntityUtils.toString(resp.getEntity());
-                return respText;
+        FormBody body = new FormBody.Builder()
+                .add("mobile", phone)
+                .add("image", code)
+                .add("userid", USER_ID)
+                .build();
+        List<Cookie> cookies = getHttpClient().cookieJar().loadForRequest(httpUrl);
+        StringBuilder csb = new StringBuilder();
+        for (Cookie cookie : cookies) {
+            csb.append(cookie.name()).append("=").append(cookie.value()).append(";");
+        }
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("Referer", "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex")
+                .addHeader("Cookie", csb.toString())
+                .build();
+        try (Response response = getHttpClient().newCall(request).execute()) {
+            if (response.body() != null) {
+                return response.body().string();
             }
-        } catch (IOException ignored) {
         }
         return null;
     }
 
 
-    private static List<NameValuePair> getParam(Map parameterMap) {
-        List<NameValuePair> param = new ArrayList<>();
-        for (Object o : parameterMap.entrySet()) {
-            Map.Entry parmEntry = (Map.Entry) o;
-            param.add(new BasicNameValuePair((String) parmEntry.getKey(),
-                    (String) parmEntry.getValue()));
+    public static void launchHome() {
+        String url = "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex";
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try (Response response = getHttpClient().newCall(request).execute()) {
+            if (response.body() != null) {
+                Headers headers = response.headers();
+                httpUrl = request.url();
+                List<Cookie> cookies = Cookie.parseAll(httpUrl, headers);
+                for (Cookie c : cookies) {
+                    if (c.name().equals("JSESSIONID")) {
+                        USER_ID = c.value();
+                    }
+                }
+                client.cookieJar().saveFromResponse(httpUrl, cookies);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return param;
+    }
+
+
+    /**
+     * Get image-inputStream
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public static InputStream getImageStream(String url) {
+        List<Cookie> cookies = getHttpClient().cookieJar().loadForRequest(httpUrl);
+        StringBuilder csb = new StringBuilder();
+        for (Cookie cookie : cookies) {
+            csb.append(cookie.name()).append("=").append(cookie.value()).append(";");
+        }
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Accept", "image/webp,image/apng,image/*,*/*;q=0.8")
+                .addHeader("Cookie", csb.toString())
+                .build();
+        try {
+            Response response = getHttpClient().newCall(request).execute();
+            if (response.body() != null) {
+                return response.body().byteStream();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return getImageStream(url);
     }
 
 
@@ -91,15 +130,15 @@ public class Net_ {
     public static String getImageCode() {
         String url = "https://m.client.10010.com/sma-lottery/qpactivity/getSysManageLoginCode.htm";
         url = url + "?userid=" + USER_ID + "&code=" + System.currentTimeMillis();
-        String code = C_.getImgContent(url);
+        String code = C_.getImgContent(getImageStream(url));
         for (int i = 0; i < 10 && code == null; i++) {
             try {
                 // Sleep 1 second
                 Thread.sleep(1000);
+                code = C_.getImgContent(getImageStream(url));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            code = Net_.getImageCode();
         }
         return code;
     }
@@ -114,28 +153,32 @@ public class Net_ {
      */
     public static String validateImageCode(String phone, String code) {
         String url = "https://m.client.10010.com/sma-lottery/validation/qpImgValidation.htm";
-        HttpPost poster = new HttpPost(url);
-        poster.addHeader("Referer", "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex");
-        poster.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
-        Map<String, String> values = new HashMap<>();
-        values.put("mobile", phone);
-        values.put("image", code);
-        values.put("userid", USER_ID);
-        try {
-            UrlEncodedFormEntity encodedFormEntity = new UrlEncodedFormEntity(getParam(values), "UTF-8");
-            poster.setEntity(encodedFormEntity);
-            // do request
-            HttpResponse resp = getHttpClient().execute(poster);
-            if (resp.getStatusLine().getStatusCode() == 200) {
-                String responseText = EntityUtils.toString(resp.getEntity());
-                JSONObject resJson = JSON.parseObject(responseText);
+        FormBody body = new FormBody.Builder()
+                .add("mobile", phone)
+                .add("image", code)
+                .add("userid", USER_ID)
+                .build();
+        List<Cookie> cookies = getHttpClient().cookieJar().loadForRequest(httpUrl);
+        StringBuilder csb = new StringBuilder();
+        for (Cookie cookie : cookies) {
+            csb.append(cookie.name()).append("=").append(cookie.value()).append(";");
+        }
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("Referer", "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex")
+                .addHeader("Cookie", csb.toString())
+                .build();
+        try (Response response = getHttpClient().newCall(request).execute()) {
+            if (response.body() != null) {
+                String content = response.body().string();
+                JSONObject resJson = JSON.parseObject(content);
                 if (resJson != null && resJson.getString("code").equals("YES")) {
                     return resJson.getString("mobile");
-                } else {
-                    return null;
                 }
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 
 /**
  * 抽奖线程
@@ -44,10 +45,11 @@ public class DrawRunnable implements Runnable {
                     break;
                 }
                 for (Phone p : pages) {
-                    drawLuck(p.getPhone());
                     try {
+                        Net_.launchHome();
+                        drawLuck(p.getPhone());
                         Thread.sleep(SEPARATE_TIME);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException | IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -61,7 +63,7 @@ public class DrawRunnable implements Runnable {
      *
      * @param phone
      */
-    private void drawLuck(String phone) {
+    private void drawLuck(String phone) throws IOException {
         String code = Net_.getImageCode();
         if (code == null) {
             System.err.println("获取图片验证码出错~~~");

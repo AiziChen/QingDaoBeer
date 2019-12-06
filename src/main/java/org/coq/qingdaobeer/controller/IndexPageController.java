@@ -30,6 +30,7 @@ public class IndexPageController {
     @RequestMapping("/getCode")
     @ResponseBody
     public Msg getCode() {
+        Net_.launchHome();
         String code = Net_.getImageCode();
         if (code == null) {
             return new Msg(-1, "获取验证码出错");

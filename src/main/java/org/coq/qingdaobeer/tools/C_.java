@@ -6,13 +6,8 @@ import net.sourceforge.tess4j.TesseractException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Random;
+import java.io.*;
 
 /**
  * Common tools
@@ -24,13 +19,14 @@ public class C_ {
     /**
      * Remove background then return the BufferedImage instance
      *
-     * @param imgUrl
+     * @param stream
      * @return bufferedImage
      */
-    public static BufferedImage rmBackground(String imgUrl) {
+    public static BufferedImage rmBackground(InputStream stream) {
         int threshold = 300;
         try {
-            BufferedImage img = ImageIO.read(new URL(imgUrl));
+            BufferedImage img = ImageIO.read(stream);
+            stream.close();
             int width = img.getWidth();
             int height = img.getHeight();
             for (int i = 1; i < width; i++) {
@@ -70,11 +66,11 @@ public class C_ {
     /**
      * Get image-content
      *
-     * @param imgUrl
+     * @param stream
      * @return
      */
-    public static String getImgContent(String imgUrl) {
-        BufferedImage buff = C_.rmBackground(imgUrl);
+    public static String getImgContent(InputStream stream) {
+        BufferedImage buff = C_.rmBackground(stream);
         if (buff == null) {
             return null;
         }

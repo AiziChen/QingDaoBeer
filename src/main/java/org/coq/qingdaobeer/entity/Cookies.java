@@ -1,7 +1,5 @@
 package org.coq.qingdaobeer.entity;
 
-import org.apache.http.client.CookieStore;
-
 /**
  * Cookies
  *
