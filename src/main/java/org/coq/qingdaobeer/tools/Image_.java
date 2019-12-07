@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class Image_ {
 
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
     private static final String CHARS = "1234567890adbcefghijklmnopqrstuvwxzyABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public static String getRandomCode(int size) {
@@ -38,16 +38,6 @@ public class Image_ {
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = image.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//        Color[] colors = new Color[5];
-//        Color[] colorSpaces = new Color[]{Color.WHITE, Color.CYAN,
-//                Color.GRAY, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE,
-//                Color.PINK, Color.YELLOW};
-//        float[] fractions = new float[colors.length];
-//        for (int i = 0; i < colors.length; i++) {
-//            colors[i] = colorSpaces[rand.nextInt(colorSpaces.length)];
-//            fractions[i] = rand.nextFloat();
-//        }
-//        Arrays.sort(fractions);
 
         g2.setColor(Color.GRAY);// 设置边框色
         g2.fillRect(0, 0, w, h);
@@ -103,6 +93,7 @@ public class Image_ {
 
         g2.dispose();
         ImageIO.write(image, "png", os);
+        os.close();
     }
 
     private static Color getRandColor(int fc, int bc) {
@@ -159,7 +150,6 @@ public class Image_ {
 
         int period = rand.nextInt(40) + 10; // 50;
 
-        boolean borderGap = true;
         int frames = 20;
         int phase = 7;
         for (int i = 0; i < w1; i++) {

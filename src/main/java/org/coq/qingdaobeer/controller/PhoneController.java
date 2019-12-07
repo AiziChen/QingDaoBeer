@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @RestController
@@ -22,7 +23,7 @@ public class PhoneController {
     }
 
     @PostMapping("/pushPhone")
-    public Msg pushNewPhone(@RequestParam String phone, @RequestParam String code, HttpServletRequest request) {
+    public Msg pushNewPhone(@NotNull @RequestParam String phone, @NotNull @RequestParam String code, HttpServletRequest request) {
         if (!phone.matches("^1[3-9]\\d{9}$")) {
             return new Msg(-1, "输入的手机号不正确");
         }
@@ -45,7 +46,7 @@ public class PhoneController {
 
 
     @RequestMapping("/rmPhone")
-    public Msg deletePhone(@RequestParam String phone, @RequestParam String code, HttpServletRequest request) {
+    public Msg deletePhone(@NotNull @RequestParam String phone, @NotNull @RequestParam String code, HttpServletRequest request) {
         if (!phone.matches("^1[3-9]\\d{9}$")) {
             return new Msg(-1, "输入的手机号不正确");
         }

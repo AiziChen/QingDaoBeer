@@ -42,7 +42,7 @@ public class IndexPageController {
     @RequestMapping(value = "/getVerify")
     public void getVerify(HttpServletRequest request, HttpServletResponse response) {
         String code = Image_.getRandomCode(4);
-        if (codes.size() >= 999) {
+        if (codes.size() >= 6) {
             codes.clear();
         }
         codes.put(request.getRemoteHost(), code);

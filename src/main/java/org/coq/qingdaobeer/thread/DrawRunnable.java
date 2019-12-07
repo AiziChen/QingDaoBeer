@@ -110,7 +110,7 @@ public class DrawRunnable implements Runnable {
                     System.out.println(", 抽奖失败。");
             }
         } else {
-            System.err.println("，抽奖失败。");
+            System.out.println("，抽奖失败。");
         }
     }
 }
