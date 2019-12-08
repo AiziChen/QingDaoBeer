@@ -38,6 +38,9 @@ public class DrawRunnable implements Runnable {
     public void init() {
         DrawRunnable.clazz = this;
         clazz.phoneRepo = this.phoneRepo;
+    }
+
+    public DrawRunnable() {
         initLogFile();
     }
 
@@ -72,6 +75,11 @@ public class DrawRunnable implements Runnable {
                     }
                 }
             }
+        }
+        try {
+            logFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -112,6 +120,7 @@ public class DrawRunnable implements Runnable {
             switch (status) {
                 case "000":
                 case "200":
+                    logFile.appendSuccess(phone, "___");
                     switch (resJson.getJSONObject("data").getInteger("level")) {
                         case 1:
                             logFile.appendSuccess(phone, "获得50M流量");
