@@ -6,7 +6,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Random;
 
 public class Image_ {
@@ -17,7 +16,7 @@ public class Image_ {
     public static String getRandomCode(int size) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size; ++i) {
-            int ii = rand.nextInt(CHARS.length());
+            int ii = rand.nextInt(CHARS.length() - 1);
             char c = CHARS.charAt(ii);
             sb.append(c);
         }
@@ -48,7 +47,7 @@ public class Image_ {
 
         //绘制干扰线
         for (int i = 0; i < 10; i++) {
-            g2.setColor(getRandColor(100, 200));// 设置线条的颜色
+            g2.setColor(getRandColor(100, 200));
             g2.setStroke(new BasicStroke(rand.nextInt(3) + 10));
             int x = rand.nextInt(w - 1);
             int y = rand.nextInt(h - 1);
@@ -62,7 +61,7 @@ public class Image_ {
         g2.drawLine(0, rand.nextInt(h), w, rand.nextInt(h));
 
         // 添加噪点
-        float yawpRate = 0.05f;// 噪声率
+        float yawpRate = 0.05f;
         int area = (int) (yawpRate * w * h);
         for (int i = 0; i < area; i++) {
             int x = rand.nextInt(w);
@@ -71,7 +70,7 @@ public class Image_ {
             image.setRGB(x, y, rgb);
         }
 
-//        shear(g2, w, h, c);// 使图片扭曲
+//        shear(g2, w, h, c);// 扭曲图片
 
         g2.setColor(getRandColor(100, 160));
         int fontSize = h - 4;

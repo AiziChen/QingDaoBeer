@@ -29,10 +29,8 @@ public class Net_ {
     public static OkHttpClient getHttpClient() {
         if (client == null) {
             client = new OkHttpClient();
-            return client;
-        } else {
-            return client;
         }
+        return client;
     }
 
     /**
@@ -69,6 +67,9 @@ public class Net_ {
     }
 
 
+    /**
+     * 加载主页，获取Cookies
+     */
     public static void launchHome() {
         String url = "https://m.client.10010.com/sma-lottery/qpactivity/qingpiindex";
         Request request = new Request.Builder()
@@ -201,5 +202,27 @@ public class Net_ {
             ip = request.getRemoteAddr();
         }
         return ip;
+    }
+
+    /**
+     * 判断传入的手机号是否为联通运营商的手机号
+     *
+     * @param phoneNumber
+     * @return
+     */
+    public static boolean isUnicom(String phoneNumber) {
+        String url = "https://tcc.taobao.com/cc/json/mobile_tel_segment.htm?tel=" + phoneNumber;
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try (Response response = getHttpClient().newCall(request).execute()) {
+            ResponseBody respBody = response.body();
+            if (respBody != null) {
+                return respBody.string().contains("联通");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return isUnicom(phoneNumber);
     }
 }

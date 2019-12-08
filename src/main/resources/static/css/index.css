@@ -3,15 +3,13 @@
  */
 body {
     background-color: antiquewhite;
+    font-size: large;
 }
 /**
  * main content
  */
 div#content-main {
     text-align: center;
-}
-img#verify-code-image {
-    padding-left: 3em;
 }
 /**
  * system information
@@ -28,10 +26,14 @@ form input {
     border: 2px solid goldenrod;
     border-radius: 4px;
     padding: 2px;
+    font-size: medium;
 }
 form input#btn-add {
     background-color: #efef00;
     padding: 4px 10px;
+    width: 120px;
+    height: 40px;
+    font-size: medium;
 }
 form input#btn-add:active {
     font-weight: bold;

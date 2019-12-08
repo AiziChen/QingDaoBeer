@@ -2,6 +2,7 @@ package org.coq.qingdaobeer.thread;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.coq.qingdaobeer.file.LogFile;
 import org.coq.qingdaobeer.record.Phone;
 import org.coq.qingdaobeer.repo.PhoneRepository;
 import org.coq.qingdaobeer.tools.Net_;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * 抽奖线程
@@ -21,9 +24,11 @@ import java.io.IOException;
  */
 @Component
 public class DrawRunnable implements Runnable {
-    private static final long SEPARATE_TIME = 2 * 1000;
-    private static final int TIMES = 3;
+    private static final long SEPARATE_TIME = 15 * 100; // 1.5 s
+    private static final int TIMES = 1;
     private static final int PAGE_SIZE = 10;
+
+    private LogFile logFile;
 
     @Autowired
     private PhoneRepository phoneRepo;
@@ -33,6 +38,19 @@ public class DrawRunnable implements Runnable {
     public void init() {
         DrawRunnable.clazz = this;
         clazz.phoneRepo = this.phoneRepo;
+        initLogFile();
+    }
+
+    private void initLogFile() {
+        try {
+            logFile = new LogFile("qing-dao-beer.log", "rw");
+            logFile.seek(logFile.length());
+            logFile.write("=== ".getBytes());
+            logFile.write(Calendar.getInstance(Locale.CHINA).getTime().toString().getBytes());
+            logFile.write(" ===\r\n".getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -88,29 +106,49 @@ public class DrawRunnable implements Runnable {
         }
 
         String result = Net_.startDraw(hashStylePhoneNumber, code);
-        System.out.print("手机号: `" + phone + "`");
         if (result != null) {
             JSONObject resJson = JSON.parseObject(result);
-            int status = resJson.getInteger("status");
+            String status = resJson.getString("status");
             switch (status) {
-                case 000:
-                case 200:
-                    System.out.println(", 成功抽奖。");
+                case "000":
+                case "200":
+                    switch (resJson.getJSONObject("data").getInteger("level")) {
+                        case 1:
+                            logFile.appendSuccess(phone, "获得50M流量");
+                            break;
+                        case 2:
+                            logFile.appendSuccess(phone, "获得100M流量");
+                            break;
+                        case 3:
+                            logFile.appendSuccess(phone, "获得幸运奖");
+                            break;
+                        case 4:
+                            logFile.appendSuccess(phone, "获得1000M流量");
+                            break;
+                        case 5:
+                            logFile.appendSuccess(phone, "获得20钻石");
+                            break;
+                        case 6:
+                            logFile.appendSuccess(phone, "获得20元");
+                            break;
+                        case 7:
+                            logFile.appendSuccess(phone, "获得50元");
+                            break;
+                    }
                     break;
-                case 500:
-                    System.err.println("没抽奖次数了哦，改日再战吧!");
+                case "500":
+                    logFile.appendFailed(phone, "没抽奖次数了哦，改日再战吧！");
                     break;
-                case 400:
-                    System.err.println("当前参与人数众多，请稍后再试！");
+                case "400":
+                    logFile.appendFailed(phone, "当前参与人数众多，请稍后再试！");
                     break;
-                case 700:
-                    System.err.println("当前抽奖人数过多，请稍后重试！");
+                case "700":
+                    logFile.appendFailed(phone, "当前抽奖人数过多，请稍后重试！");
                     break;
-                default:
-                    System.out.println(", 抽奖失败。");
             }
         } else {
-            System.out.println("，抽奖失败。");
+            // 网络出错，重新抽奖
+            drawLuck(phone);
         }
     }
 }

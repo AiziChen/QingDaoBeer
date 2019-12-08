@@ -35,6 +35,9 @@ public class PhoneController {
                 .equals(code.toLowerCase())) {
             return new Msg(-1, "验证码不正确");
         }
+        if (!Net_.isUnicom(phone)) {
+            return new Msg(-1, "输入的手机不是联通号，无法添加");
+        }
         try {
             phoneRepo.save(new Phone(phone, new Date()));
         } catch (Exception e) {
