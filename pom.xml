@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.coq</groupId>
     <artifactId>qingdaobeer</artifactId>
-    <version>1.4</version>
+    <version>1.4.1</version>
     <name>QingDaoBeer</name>
     <description>QingDaoBeer project for Spring Boot</description>
 

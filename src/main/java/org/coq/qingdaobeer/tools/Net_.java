@@ -5,10 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,7 +20,7 @@ public class Net_ {
     private static HttpUrl httpUrl;
 
     /**
-     * Get the HttpClient
+     * Get the HttpClient instance
      *
      * @return
      */
